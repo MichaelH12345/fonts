@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-ascale=1.0">
     <title>Background Iframe</title>
     <style>
+        /* Font imports */
         @font-face {
             font-family: 'AvertaBold';
             src: url('https://raw.githubusercontent.com/MichaelH12345/fonts/main/AvertaBold-_1_.ttf') format('truetype');
@@ -29,15 +30,17 @@
             font-weight: normal;
             font-style: normal;
         }
+        
+        /* Body styles */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
             overflow: hidden;
-        }
-        body {
             background-color: #141d2c; /* Background color of the whole page */
         }
+        
+        /* Background image */
         .background {
             position: fixed;
             top: 15px; /* 15 pixels from the top */
@@ -48,6 +51,8 @@
             width: 50px; /* 50% smaller width */
             height: auto; /* Maintain aspect ratio */
         }
+        
+        /* Iframe container */
         .iframe-container {
             position: absolute;
             top: 0;
@@ -64,6 +69,8 @@
             height: 1920px;
             border: none;
         }
+        
+        /* Text styles */
         .text-box {
             position: absolute;
             left: 60px; /* Start 60 pixels from the very left */
@@ -95,6 +102,8 @@
             height: 3px; /* Medium thickness */
             background-color: #FF4713; /* Orange color */
         }
+        
+        /* Live train services */
         .live-train-services {
             position: absolute;
             top: 160px; /* Adjust based on your layout */
@@ -119,78 +128,96 @@
             align-items: center; /* Align items vertically */
             flex-wrap: wrap; /* Allow wrapping */
         }
-
         .live-train-services li div {
             flex: 1; /* Distribute equal space */
+}
+
+.live-train-services li .destination {
+    position: absolute;
+    text-align: left;
+    left: 205px; /* Adjust left position for positioning */
+    width: calc(100% - 170px); /* Decrease width of container */
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+
+.live-train-services li .platform {
+    position: absolute;
+    text-align: right;
+    right: 875px; /* Adjust right position for positioning */
+    width: 100px; /* Adjust width as needed */
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.live-train-services li .status {
+    position: absolute;
+    text-align: right;
+    right: 595px; /* Adjust right position for positioning */
+    color: white;
+}
+
+   .live-train-services li .operator {
+ position: absolute;
+    text-align: left;
+    left: 205px; /* Adjust left position for positioning */
+    width: calc(100% - 170px); /* Decrease width of container */
+    white-space: nowrap;
+    overflow: hidden;
+            font-family: 'Thin Averta', sans-serif; /* Change font to Thin Averta */
         }
 
-        .live-train-services li .destination {
-            display: inline-block; /* Display as inline-block */
-            width: auto; /* Set width to auto */
-            text-align: left; /* Align destination text to the left */
-            padding-right: 0; /* Remove padding */
-            padding-left: 35px; /* Match x position with 'Destination' text */
-        }
-
-        .live-train-services li .platform {
-            text-align: right; /* Align platform text to the right */
-            padding-left: 250px; /* Match x position with 'Platform' text */
-        }
-
-        .live-train-services li .status {
-            text-align: right; /* Align status text to the right */
-            padding-left: 100px; /* Match x position with 'Status' text */
-            color: white; /* Set default text color */
-        }
-
-        .live-train-services li .operator {
-            text-align: right; /* Align operator text to the right */
-            padding-left: 10px; /* Adjust padding as needed */
-            width: 200px; /* Set a fixed width for the operator text */
-        }
-
+        
+        /* Orange box */
         .orange-box {
             position: absolute;
             bottom: 0; /* Start at the very bottom */
             left: 0; /* Align with the left side of the iframe */
-            height: 75px; /* Set the height to 50 pixels */
+            height: 85px; /* Set the height to 50 pixels */
             width: 100%; /* Make it span the entire width of the iframe */
             background-color: #FF4713; /* Change the background color */
         }
     </style>
 </head>
 <body>
+    <!-- Background image -->
     <div class="background">
-        <!-- Image with 15 pixels from the top and 30 pixels from the left -->
         <img id="image" src="https://raw.githubusercontent.com/MichaelH12345/fonts/main/download%20(1).png" alt="Image" onload="updateTextBoxPosition()">
     </div>
+    
+    <!-- Text boxes -->
     <div class="text-box">Departures</div>
     <div class="time">
         <div>Time</div>
         <div style="padding-left: 35px;">Destination</div>
-        <div style="padding-left: 250px;">Platform</div>
-        <div style="padding-left: 100px;">Status</div>
-        <div style="padding-left: 10px;">Facilities & Reservations</div>
+        <div style="padding-left: 500px;">Platform</div>
+        <div style="padding-left: 125px;">Status</div>
+        <div style="padding-left: 0px;">Facilities & Reservations</div>
     </div>
-
+    
+    <!-- Line -->
     <div class="line"></div>
     
-    <!-- Live train services section -->
-    <div class="live-train-services" id="liveTrainServices">
-        <ul id="liveTrainList"></ul>
-    </div>
+<!-- Live train services section -->
+<div class="live-train-services" id="liveTrainServices">
+    <ul id="liveTrainList"></ul>
+</div>
 
+    
+    <!-- Iframe container -->
     <div class="iframe-container">
-        <!-- Iframe containing the image -->
         <iframe src="https://raw.githubusercontent.com/MichaelH12345/fonts/main/download%20(1).png"></iframe>
     </div>
+    
+    <!-- Orange box -->
     <div class="orange-box"></div>
     <div class="alert-text" id="scrollingText"></div>
 
 <script>
     async function fetchAndDisplayLiveTrainServices() {
         try {
-            const response = await fetch('https://national-rail-api.davwheat.dev/staffdepartures/CAR?expand=true');
+            const response = await fetch('https://national-rail-api.davwheat.dev/staffdepartures/LAN?expand=true');
             const data = await response.json();
             const trainServices = data.trainServices;
 
@@ -203,42 +230,43 @@
             } else {
                 // Generate and append live train service list items
                 trainServices.forEach(service => {
-                    const listItem = document.createElement('li');
-                    const destination = service.destination[0].locationName;
-                    const platform = service.platform || '-';
-                    const operator = service.operator ? service.operator : '-';
+    const listItem = document.createElement('li');
+    const destination = service.destination[0].locationName;
+    const platform = service.platform || '-';
+    const operator = service.operator ? service.operator : '-';
 
-                    // Extracting time from std and etd fields
-                    let std = service.std ? formatDepartureTime(service.std) : '-';
-                    const etd = service.etd ? formatDepartureTime(service.etd) : '-';
-                    
-                    // Determine status based on cancellation status
-                    let status;
-                    let color; // Variable to store text color
-                    if (service.isCancelled) {
-                        status = 'Cancelled';
-                        color = '#FF4713'; // Set text color to orange for Cancelled status
-                    } else if (etd === '00:00') {
-                        status = 'Delayed';
-                        color = 'white'; // Set text color to white for Delayed status
-                    } else if (std === etd) {
-                        status = 'On Time';
-                        color = 'white'; // Set text color to white for On Time status
-                    } else {
-                        status = etd;
-                        color = 'white'; // Set text color to white for other statuses
-                    }
+    // Extracting time from std and etd fields
+    let std = service.std ? formatDepartureTime(service.std) : '-';
+    const etd = service.etd ? formatDepartureTime(service.etd) : '-';
 
-                    listItem.innerHTML = `
-                        <div>${std}</div>
-                        <div class="destination">${destination}</div>
-                        <div class="platform">${platform}</div>
-                        <div class="status" style="color: ${color};">${status}</div>
-                        <div class="operator">${operator}</div>
-                    `;
+    // Determine status based on cancellation status
+    let status;
+    let color; // Variable to store text color
+    if (service.isCancelled) {
+        status = 'Cancelled';
+        color = '#FF4713'; // Set text color to orange for Cancelled status
+    } else if (etd === '00:00') {
+        status = 'Delayed';
+        color = 'white'; // Set text color to white for Delayed status
+    } else if (std === etd) {
+        status = 'On Time';
+        color = 'white'; // Set text color to white for On Time status
+    } else {
+        status = etd;
+        color = 'white'; // Set text color to white for other statuses
+    }
 
-                    liveTrainList.appendChild(listItem);
-                });
+    listItem.innerHTML = `
+        <div>${std}</div>
+        <div class="destination">${destination}</div>
+        <div class="platform">${platform}</div>
+        <div class="status" style="color: ${color};">${status}</div>
+        <div class="operator">${operator}</div>
+    `;
+
+    liveTrainList.appendChild(listItem);
+});
+
             }
         } catch (error) {
             console.error('Error fetching live train services:', error);
