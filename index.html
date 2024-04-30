@@ -87,7 +87,7 @@
                         messageContent.innerHTML = `Welcome to ${locationName}.<br>If you see something that looks suspicious, speak to station staff or text the BTP on 61016. See it, Say it, Sorted.`;
                         const stationManager = data.stationManager;
                         if (stationManager) {
-                            stationManagerInfo.textContent = `Managed by ${stationManager}`;
+                            stationManagerInfo.textContent = `Station managed by ${stationManager}`;
                         } else {
                             stationManagerInfo.textContent = '';
                         }
@@ -96,7 +96,7 @@
                         const toc = data.toc, stationManager = data.stationManager;
                         toc ? tocInfo.textContent = `Operated by ${toc}` : null;
                         stationManager ? stationManagerInfo.textContent = `Managed by ${stationManager}` : null;
-                        locationName ? specialNotices.textContent = `Special Notices at ${locationName}` : null;
+                        locationName ? specialNotices.textContent = `${locationName} Station Notices` : null;
                         showMessage();
                     }
                 })
