@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display nrccMessages</title>
+    <style>
+        @font-face {
+            font-family: 'National Rail PIS Regular Font';
+            src: url('https://raw.githubusercontent.com/MichaelH12345/fonts/main/national-rail-pis-regular-font.ttf') format('truetype');
+        }
+        @font-face {
+            font-family: 'Dot Matrix Bold';
+            src: url('https://raw.githubusercontent.com/MichaelH12345/fonts/main/subset-Dot_Matrix_Bold.ttf') format('truetype');
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: black;
+            font-family: 'Dot Matrix Bold', sans-serif;
+        }
+        #nrccMessagesFrame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            box-sizing: border-box;
+            border-right: 10px solid transparent;
+            color: #E69500; /* Changed text color to orange */
+        }
+        #specialNotices, #messageCounter, #clock {
+            font-family: 'Dot Matrix Bold', sans-serif;
+            font-size: calc(60px + 10px + 10px);
+        }
+        #tocInfo, #stationManagerInfo, #messageContent {
+            font-family: 'National Rail PIS Regular Font', sans-serif;
+            font-size: 65px;
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #specialNotices {
+            font-size: calc(70px + 10px + 10px);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        #messageCounter, #clock {
+            position: absolute;
+            bottom: 10px;
+        }
+        #messageCounter { left: 10px; }
+        #clock { right: 10px; }
+        #stationManagerInfo { position: absolute; bottom: 140px; }
+        .orange-link { color: orange; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="nrccMessagesFrame">
+        <div id="specialNotices"></div>
+        <div id="tocInfo"></div>
+        <div id="stationManagerInfo"></div>
+        <div id="messageContent"></div>
+        <div id="messageCounter"></div>
+        <div id="clock"></div>
+    </div>
+    <script>
+        let currentMessageIndex = 0, messages = [], messageCounter = document.getElementById("messageCounter"), specialNotices = document.getElementById("specialNotices"), tocInfo = document.getElementById("tocInfo"), stationManagerInfo = document.getElementById("stationManagerInfo"), messageContent = document.getElementById("messageContent"), clock = document.getElementById("clock");
+
+        function fetchMessages(station) {
+            fetch(`https://national-rail-api.davwheat.dev/staffdepartures/${station}?expand=true`)
+                .then(response => response.json())
+                .then(data => {
+                    messages = data.nrccMessages;
+                    const locationName = data.locationName;
+                    if (!messages || messages.length === 0) {
+                        specialNotices.textContent = `Special Notices at ${locationName}`;
+                        messageContent.innerHTML = `Welcome to ${locationName}.<br>If you see something that looks suspicious, speak to station staff or text the BTP on 61016. See it, Say it, Sorted.`;
+                        const stationManager = data.stationManager;
+                        if (stationManager) {
+                            stationManagerInfo.textContent = `Managed by ${stationManager}`;
+                        } else {
+                            stationManagerInfo.textContent = '';
+                        }
+                        messageCounter.textContent = 'Page 1 of 1';
+                    } else {
+                        const toc = data.toc, stationManager = data.stationManager;
+                        toc ? tocInfo.textContent = `Operated by ${toc}` : null;
+                        stationManager ? stationManagerInfo.textContent = `Managed by ${stationManager}` : null;
+                        locationName ? specialNotices.textContent = `Special Notices at ${locationName}` : null;
+                        showMessage();
+                    }
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        }
+
+        function showMessage() {
+            if (!messages || messages.length === 0) return;
+            if (currentMessageIndex >= messages.length) currentMessageIndex = 0;
+            const currentMessage = messages[currentMessageIndex].xhtmlMessage, messageCount = messages.length, clickableRegex = /<a href="(.*?)">(.*?)<\/a>/g;
+            let styledMessage = currentMessage.replace(clickableRegex, '<span class="orange-link">$2</span>');
+            messageContent.innerHTML = styledMessage;
+            messageCounter.textContent = `Page ${currentMessageIndex + 1} of ${messageCount}`;
+            currentMessageIndex++;
+            setTimeout(showMessage, 10000);
+        }
+
+        function updateClock() {
+            const now = new Date(), hours = now.getHours().toString().padStart(2, '0'), minutes = now.getMinutes().toString().padStart(2, '0'), seconds = now.getSeconds().toString().padStart(2, '0');
+            clock.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        function init() {
+            const station = prompt("Enter station CRS code:");
+            if (station) {
+                fetchMessages(station.toUpperCase());
+                updateClock();
+                setInterval(fetchMessages, 60000, station.toUpperCase());
+                setInterval(updateClock, 1000);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
