@@ -3,133 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Display nrccMessages</title>
+    <title>Departures</title>
     <style>
+        /* CSS styles remain the same as previously provided */
         @font-face {
-            font-family: 'National Rail PIS Regular Font';
-            src: url('https://raw.githubusercontent.com/MichaelH12345/fonts/main/national-rail-pis-regular-font.ttf') format('truetype');
+            font-family: 'BlackBoxFont';
+            src: url('https://raw.githubusercontent.com/MichaelH12345/Departures1/main/BlackBox_Font.ttf') format('truetype');
         }
-        @font-face {
-            font-family: 'Dot Matrix Bold';
-            src: url('https://raw.githubusercontent.com/MichaelH12345/fonts/main/subset-Dot_Matrix_Bold.ttf') format('truetype');
+
+        a {
+            color: white;
+            text-decoration: none;
+            pointer-events: none;
+            cursor: default;
         }
+
         body {
             margin: 0;
-            padding: 0;
-            height: 100%;
             background-color: black;
-            font-family: 'Dot Matrix Bold', sans-serif;
-        }
-        #nrccMessagesFrame {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 20px;
+            font-family: 'BlackBoxFont', sans-serif;
+            height: 100vh;
+            width: 100vw;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+        }
+
+        .header {
+            width: 100%;
+            height: 125px;
+            background-color: #222222;
+            color: white;
+            font-size: 90px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 25px;
+            box-sizing: border-box;
+        }
+
+        .clock {
+            color: yellow;
+            font-size: 90px;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-header {
+            width: 100%;
+            height: 85px;
+            background-color: black;
+            color: yellow;
+            font-size: 50px;
+            display: flex;
+            align-items: center;
+            font-family: 'BlackBoxFont', sans-serif;
+            font-weight: bold;
+            padding: 0 25px;
+            box-sizing: border-box;
+            position: absolute;
+            top: 675px;
+        }
+
+        .page-text {
+            margin-right: auto;
+        }
+
+        .page-header .circle-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .circle {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            margin-left: 25px;
+        }
+
+        .circle-yellow {
+            background-color: yellow;
+        }
+
+        .circle-grey {
+            background-color: grey;
+        }
+
+        .info-section {
+            position: absolute;
+            top: 760px;
+            width: 100%;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .info-bar {
+            width: 100%;
+            height: 100px;
+            background-color: yellow;
+            color: black;
+            font-size: 60px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            box-sizing: border-box;
+        }
+
+        .info-box {
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            color: white;
+            font-size: 50px;
+            text-align: left;
+        }
+
+        .boxes-container {
+            position: absolute;
+            top: 125px;
+            width: 100%;
+            height: 550px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .box {
+            width: 100%;
+            height: 20%;
+            display: flex;
             align-items: center;
             box-sizing: border-box;
-            border-right: 10px solid transparent;
-            color: #E69500; /* Changed text color to orange */
+            position: relative;
         }
-        #specialNotices, #messageCounter, #clock {
-            font-family: 'Dot Matrix Bold', sans-serif;
-            font-size: calc(60px + 10px + 10px);
-        }
-        #tocInfo, #stationManagerInfo, #messageContent {
-            font-family: 'National Rail PIS Regular Font', sans-serif;
-            font-size: 65px;
-            margin-bottom: 10px;
-            text-align: center;
-            width: 100%;
-            margin-top: 20px;
-        }
-        #specialNotices {
-            font-size: calc(70px + 10px + 10px);
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        #messageCounter, #clock {
+
+        .time {
             position: absolute;
-            bottom: 10px;
+            left: 25px;
+            color: yellow;
+            font-size: 75px;
+            font-weight: bold;
         }
-        #messageCounter { left: 10px; }
-        #clock { right: 10px; }
-        #stationManagerInfo { position: absolute; bottom: 140px; }
-        .orange-link { color: orange; cursor: pointer; }
+
+        .destination {
+            position: absolute;
+            left: 250px;
+            color: white;
+            font-size: 75px;
+            font-weight: bold;
+        }
+
+        .platform {
+            position: absolute;
+            left: 1350px;
+            color: yellow;
+            font-size: 75px;
+            font-weight: bold;
+        }
+
+        .status-rectangle {
+            position: absolute;
+            right: 15px;
+            width: 300px;
+            height: 75px;
+            background-color: white;
+            color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 40px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+        }
+
+        .fade-out {
+            opacity: 0 !important;
+        }
     </style>
 </head>
 <body>
-    <div id="nrccMessagesFrame">
-        <div id="specialNotices"></div>
-        <div id="tocInfo"></div>
-        <div id="stationManagerInfo"></div>
-        <div id="messageContent"></div>
-        <div id="messageCounter"></div>
-        <div id="clock"></div>
-    </div>
-    <script>
-        let currentMessageIndex = 0, messages = [], messageCounter = document.getElementById("messageCounter"), specialNotices = document.getElementById("specialNotices"), tocInfo = document.getElementById("tocInfo"), stationManagerInfo = document.getElementById("stationManagerInfo"), messageContent = document.getElementById("messageContent"), clock = document.getElementById("clock");
 
-        function fetchMessages(station) {
-            fetch(`https://national-rail-api.davwheat.dev/staffdepartures/${station}?expand=true`)
+    <div class="header">
+        <div id="location-title" class="title"></div>
+        <div id="clock" class="clock"></div>
+    </div>
+
+    <div class="boxes-container" id="boxes-container">
+        <!-- Service boxes 1-5 -->
+        <div class="box box-1">
+            <div class="time" id="time-1"></div>
+            <div class="destination" id="destination-1"></div>
+            <div class="platform" id="platform-1"></div>
+            <div class="status-rectangle" id="status-1"></div>
+        </div>
+        <div class="box box-2">
+            <div class="time" id="time-2"></div>
+            <div class="destination" id="destination-2"></div>
+            <div class="platform" id="platform-2"></div>
+            <div class="status-rectangle" id="status-2"></div>
+        </div>
+        <div class="box box-3">
+            <div class="time" id="time-3"></div>
+            <div class="destination" id="destination-3"></div>
+            <div class="platform" id="platform-3"></div>
+            <div class="status-rectangle" id="status-3"></div>
+        </div>
+        <div class="box box-4">
+            <div class="time" id="time-4"></div>
+            <div class="destination" id="destination-4"></div>
+            <div class="platform" id="platform-4"></div>
+            <div class="status-rectangle" id="status-4"></div>
+        </div>
+        <div class="box box-5">
+            <div class="time" id="time-5"></div>
+            <div class="destination" id="destination-5"></div>
+            <div class="platform" id="platform-5"></div>
+            <div class="status-rectangle" id="status-5"></div>
+        </div>
+    </div>
+
+    <div class="page-header">
+        <div id="page-text" class="page-text">Page 1 of 2</div>
+        <div class="circle-container">
+            <div id="circle-1" class="circle circle-yellow"></div>
+            <div id="circle-2" class="circle circle-grey"></div>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div id="info-bar" class="info-bar">Information</div>
+        <div id="info-box" class="info-box">
+            <!-- Message will be dynamically set here -->
+        </div>
+    </div>
+
+    <script>
+        const apiUrl = 'https://national-rail-api.davwheat.dev/staffdepartures/CAR?expand=true';
+
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        const totalPages = 2;
+        const boxesContainer = document.getElementById('boxes-container');
+
+        function formatTime(timeString) {
+            return timeString.split('T')[1].substring(0, 5);
+        }
+
+        function getMinutesSinceMidnight(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
+
+        function updateDepartureInfo() {
+            fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
-                    messages = data.nrccMessages;
-                    const locationName = data.locationName;
-                    if (!messages || messages.length === 0) {
-                        specialNotices.textContent = `Special Notices at ${locationName}`;
-                        messageContent.innerHTML = `Welcome to ${locationName}.<br>If you see something that looks suspicious, speak to station staff or text the BTP on 61016. See it, Say it, Sorted.`;
-                        const stationManager = data.stationManager;
-                        if (stationManager) {
-                            stationManagerInfo.textContent = `Station managed by ${stationManager}`;
+                    console.log('API Response:', data);
+
+                    // Get the locationName from the first object in the response
+                    const locationName = data.locationName || 'Unknown Location';
+                    document.getElementById('location-title').textContent = `${locationName} Departures`;
+
+                    const services = data.trainServices || [];
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+
+                    const boxes = document.querySelectorAll('.box');
+
+                    for (let i = start; i < end; i++) {
+                        const service = services[i];
+                        const std = formatTime(service.std);
+                        const etd = formatTime(service.etd);
+                        const atd = formatTime(service.atd);
+                        const isCancelled = service.isCancelled;
+                        const platform = service.platform;
+                        const subsequentLocations = service.subsequentLocations;
+                        const lastLocation = subsequentLocations && subsequentLocations[subsequentLocations.length - 1];
+                        const destinationName = lastLocation ? lastLocation.locationName : 'Unknown';
+
+                        const index = i - start;
+                        const timeElem = document.getElementById(`time-${index + 1}`);
+                        const destinationElem = document.getElementById(`destination-${index + 1}`);
+                        const platformElem = document.getElementById(`platform-${index + 1}`);
+                        const statusElem = document.getElementById(`status-${index + 1}`);
+                        const statusStyle = statusElem.style;
+
+                        timeElem.textContent = std;
+                        destinationElem.textContent = destinationName;
+                        platformElem.textContent = `Plat ${platform}`;
+
+                        const stdMinutes = getMinutesSinceMidnight(std);
+                        const etdMinutes = getMinutesSinceMidnight(etd);
+
+                        if (isCancelled) {
+                            statusElem.textContent = 'Cancelled';
+                            statusStyle.backgroundColor = '#d4351c';
+                            statusStyle.color = 'white';
+                        } else if (etd && std) {
+                            if (etdMinutes > stdMinutes) {
+                                statusElem.textContent = `Exp ${etd}`;
+                                statusStyle.backgroundColor = '#db5039';
+                                statusStyle.color = 'white';
+                            } else if (Math.abs(etdMinutes - stdMinutes) <= 1) {
+                                statusElem.textContent = 'On Time';
+                                statusStyle.backgroundColor = 'white';
+                                statusStyle.color = 'black';
+                            } else if (etdMinutes < stdMinutes && stdMinutes - etdMinutes <= 5) {
+                                statusElem.textContent = 'On Time';
+                                statusStyle.backgroundColor = 'white';
+                                statusStyle.color = 'black';
+                            } else {
+                                statusElem.textContent = 'Arrived';
+                                statusStyle.backgroundColor = 'white';
+                                statusStyle.color = 'black';
+                            }
                         } else {
-                            stationManagerInfo.textContent = '';
+                            statusElem.textContent = 'N/A';
+                            statusStyle.backgroundColor = 'white';
+                            statusStyle.color = 'black';
                         }
-                        messageCounter.textContent = 'Page 1 of 1';
+                    }
+
+                    // Update the page header and indicator circles
+                    document.getElementById('page-text').textContent = `Page ${currentPage} of ${totalPages}`;
+                    document.getElementById('circle-1').classList.toggle('circle-yellow', currentPage === 1);
+                    document.getElementById('circle-1').classList.toggle('circle-grey', currentPage !== 1);
+                    document.getElementById('circle-2').classList.toggle('circle-yellow', currentPage === 2);
+                    document.getElementById('circle-2').classList.toggle('circle-grey', currentPage !== 2);
+
+                    // Handle nrccMessages
+                    const nrccMessages = data.nrccMessages;
+                    const infoBox = document.getElementById('info-box');
+                    
+                    if (nrccMessages && nrccMessages.length > 0) {
+                        // Remove any \n characters to avoid extra lines
+                        const cleanedMessage = nrccMessages[0].xhtmlMessage.replace(/\n/g, '');
+                        infoBox.innerHTML = cleanedMessage;
                     } else {
-                        const toc = data.toc, stationManager = data.stationManager;
-                        toc ? tocInfo.textContent = `Operated by ${toc}` : null;
-                        stationManager ? stationManagerInfo.textContent = `Managed by ${stationManager}` : null;
-                        locationName ? specialNotices.textContent = `${locationName} Station Notices` : null;
-                        showMessage();
+                        infoBox.textContent = 'If you see something that looks unusual, speak to our team or text the British Transport Police on 61016. We will sort it. See it. Say it. Sorted.';
                     }
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
 
-        function showMessage() {
-            if (!messages || messages.length === 0) return;
-            if (currentMessageIndex >= messages.length) currentMessageIndex = 0;
-            const currentMessage = messages[currentMessageIndex].xhtmlMessage, messageCount = messages.length, clickableRegex = /<a href="(.*?)">(.*?)<\/a>/g;
-            let styledMessage = currentMessage.replace(clickableRegex, '<span class="orange-link">$2</span>');
-            messageContent.innerHTML = styledMessage;
-            messageCounter.textContent = `Page ${currentMessageIndex + 1} of ${messageCount}`;
-            currentMessageIndex++;
-            setTimeout(showMessage, 10000);
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeString = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = timeString;
         }
 
-        function updateClock() {
-            const now = new Date(), hours = now.getHours().toString().padStart(2, '0'), minutes = now.getMinutes().toString().padStart(2, '0'), seconds = now.getSeconds().toString().padStart(2, '0');
-            clock.textContent = `${hours}:${minutes}:${seconds}`;
+        function startCycle() {
+            updateDepartureInfo(); // Load initial data
+            fadeCycle();
         }
 
-        function init() {
-            const station = prompt("Enter station CRS code:");
-            if (station) {
-                fetchMessages(station.toUpperCase());
-                updateClock();
-                setInterval(fetchMessages, 60000, station.toUpperCase());
-                setInterval(updateClock, 1000);
-            }
+        function fadeCycle() {
+            fadeIn();
+            setTimeout(() => {
+                fadeOut();
+                setTimeout(() => {
+                    currentPage = currentPage === 1 ? 2 : 1;
+                    updateDepartureInfo(); // Load the next page's data
+                    setTimeout(() => {
+                        fadeIn();
+                        setTimeout(fadeOut, 15000); // Keep the new data visible for 15 seconds before fading out
+                    }, 1000); // Wait 1 second before fading in the next page
+                }, 1000); // Wait 1 second before switching the page
+            }, 15000); // Keep the current data visible for 15 seconds before fading out
         }
 
-        init();
+        function fadeIn() {
+            boxesContainer.classList.remove('fade-out');
+            boxesContainer.classList.add('fade-in');
+        }
+
+        function fadeOut() {
+            boxesContainer.classList.remove('fade-in');
+            boxesContainer.classList.add('fade-out');
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+        startCycle();
     </script>
+
 </body>
 </html>
